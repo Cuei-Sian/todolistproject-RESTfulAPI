@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const http = require("http");
+const errorHandle = require("./errorHandle");
 const todos = [];
 // 測試用
 // [
@@ -17,6 +18,11 @@ const requestListener = (req, res) => {
     "Access-Control-Allow-Methods": "PATCH, POST, GET,OPTIONS,DELETE",
     "Content-Type": "application/json",
   };
+  let body = "";
+  req.on("data", (chunk) => {
+    console.log(chunk);
+    body += chunk;
+  });
 
   if (req.url == "/todos" && req.method == "GET") {
     res.writeHead(200, headers);
@@ -29,11 +35,39 @@ const requestListener = (req, res) => {
     );
     res.end();
   } else if (req.url == "/todos" && req.method == "POST") {
+    req.on("end", () => {
+      try {
+        const title = JSON.parse(body).title;
+        if (title !== undefined) {
+          const todo = {
+            title: title,
+            id: uuidv4(),
+          };
+          todos.push(todo);
+          console.log(todo);
+          res.writeHead(200, headers);
+          res.write(
+            JSON.stringify({
+              status: "success",
+              data: todos,
+            }),
+          );
+          res.end();
+        } else {
+          errorHandle(res);
+        }
+      } catch (error) {
+        errorHandle(res);
+      }
+    });
+  } else if (req.url == "/todos" && req.method == "DELETE") {
+    todos.length = 0;
     res.writeHead(200, headers);
     res.write(
       JSON.stringify({
         status: "success",
         data: todos,
+        delete: "yes",
       }),
     );
     res.end();

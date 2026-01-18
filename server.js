@@ -25,6 +25,7 @@ const requestListener = (req, res) => {
   });
 
   if (req.url == "/todos" && req.method == "GET") {
+    // 取得所有待辦
     res.writeHead(200, headers);
     // 成功後將文字改成JSON格式的
     res.write(
@@ -35,6 +36,7 @@ const requestListener = (req, res) => {
     );
     res.end();
   } else if (req.url == "/todos" && req.method == "POST") {
+    // 新增單筆待辦
     req.on("end", () => {
       try {
         const title = JSON.parse(body).title;
@@ -61,13 +63,42 @@ const requestListener = (req, res) => {
       }
     });
   } else if (req.url == "/todos" && req.method == "DELETE") {
+    //刪除所有待辦
     todos.length = 0;
     res.writeHead(200, headers);
     res.write(
       JSON.stringify({
         status: "success",
         data: todos,
-        delete: "yes",
+      }),
+    );
+    res.end();
+  } else if (req.url.startsWith("/todos/") && req.method == "DELETE") {
+    //刪除單筆待辦
+    const id = req.url.split("/").pop();
+    const index = todos.findIndex((element) => element.id == id);
+    if (index !== -1) {
+      todos.splice(index, 1);
+      // console.log(id, index);
+      res.writeHead(200, headers);
+      res.write(
+        JSON.stringify({
+          status: "success",
+          data: todos,
+        }),
+      );
+      res.end();
+    } else {
+      errorHandle(res);
+    }
+  } else if (req.url.startsWith("/todos/") && req.method == "PATCH") {
+    //編輯單筆待辦
+    res.writeHead(200, headers);
+    res.write(
+      JSON.stringify({
+        status: "success",
+        data: todos,
+        method: "patch",
       }),
     );
     res.end();

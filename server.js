@@ -2,7 +2,7 @@ const { v4: uuidv4 } = require("uuid");
 
 const http = require("http");
 const errorHandle = require("./errorHandle");
-const todos = ;
+const todos = [];
 // 測試用
 // [
 //   {

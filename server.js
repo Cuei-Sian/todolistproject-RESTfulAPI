@@ -1,6 +1,6 @@
-const { v4: uuidv4 } = require("uuid");
-const http = require("http");
-const errorHandle = require("./errorHandle");
+import { v4 as uuidv4 } from "uuid";
+import { createServer } from "http";
+import errorHandle from "./errorHandle";
 const todos = [];
 // 測試用
 // [
@@ -130,5 +130,5 @@ const requestListener = (req, res) => {
   }
 };
 
-const server = http.createServer(requestListener);
+const server = createServer(requestListener);
 server.listen(process.env.PORT || 3005);

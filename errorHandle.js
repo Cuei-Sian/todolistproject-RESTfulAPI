@@ -16,4 +16,4 @@ function errorHandle(res) {
   res.end();
 }
 
-module.exports = errorHandle;
+export default errorHandle;
